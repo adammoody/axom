@@ -33,13 +33,14 @@ set(TPL_ROOT "/usr/WS1/axom/libs/blueos_3_ppc64le_ib_p9/2020_03_25_18_01_31/clan
 
 set(CONDUIT_DIR "${TPL_ROOT}/conduit-0.5.1" CACHE PATH "")
 
-set(MFEM_DIR "${TPL_ROOT}/mfem-4.0" CACHE PATH "")
+set(MFEM_DIR "/usr/WS1/axom/libs/blueos_3_ppc64le_ib_p9/2020_02_18_10_07_58/clang-8.0.1_nvcc_xlf/mfem-4.0" CACHE PATH "")
 
 set(HDF5_DIR "${TPL_ROOT}/hdf5-1.8.21" CACHE PATH "")
 
 # SCR not built
 
-set(RAJA_DIR "${TPL_ROOT}/raja-0.11.0" CACHE PATH "")
+#set(RAJA_DIR "${TPL_ROOT}/raja-0.11.0" CACHE PATH "")
+set(RAJA_DIR "/g/g12/han12/RAJA/install_lc_blueos-nvcc10-clang8.0.1" CACHE PATH "")
 
 set(UMPIRE_DIR "${TPL_ROOT}/umpire-2.1.0" CACHE PATH "")
 
