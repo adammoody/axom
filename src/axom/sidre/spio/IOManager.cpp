@@ -416,7 +416,7 @@ std::string IOManager::getSCRPath(const std::string & path)
   SCR_Route_file(path.c_str(), scr_name); 
   return std::string(scr_name);
 #else
-  return std::string;
+  return path;
 #endif
 }
 
