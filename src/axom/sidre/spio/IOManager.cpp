@@ -436,6 +436,11 @@ void IOManager::loadExternalData(sidre::Group* datagroup,
       std::string hdf5_name =
         getFileNameForRank(file_pattern, root_file, set_id);
 
+      if (m_use_scr)
+      {
+        hdf5_name = getSCRPath(hdf5_name);
+      }
+
       hid_t h5_file_id = conduit::relay::io::hdf5_open_file_for_read(hdf5_name);
       SLIC_ASSERT(h5_file_id >= 0);
 
@@ -463,6 +468,11 @@ void IOManager::loadExternalData(sidre::Group* datagroup,
 
       std::string hdf5_name =
         getFileNameForRank(file_pattern, root_file, input_rank);
+
+      if (m_use_scr)
+      {
+        hdf5_name = getSCRPath(hdf5_name);
+      }
 
       hid_t h5_file_id = conduit::relay::io::hdf5_open_file_for_read(hdf5_name);
       SLIC_ASSERT(h5_file_id >= 0);
@@ -930,8 +940,14 @@ void IOManager::writeGroupToRootFile(sidre::Group* group,
                                      const std::string& file_name)
 {
 #ifdef AXOM_USE_HDF5
+  std::string tmp_name = file_name;
+  if (m_use_scr)
+  {
+    tmp_name = getSCRPath(tmp_name);
+  }
+
   hid_t root_file_id =
-    conduit::relay::io::hdf5_open_file_for_read_write(file_name);
+    conduit::relay::io::hdf5_open_file_for_read_write(tmp_name);
 
   SLIC_ASSERT(root_file_id >= 0);
 
@@ -982,8 +998,14 @@ void IOManager::writeGroupToRootFileAtPath(sidre::Group* group,
                                            const std::string& group_path)
 {
 #ifdef AXOM_USE_HDF5
+  std::string tmp_name = file_name;
+  if (m_use_scr)
+  {
+    tmp_name = getSCRPath(tmp_name);
+  }
+
   hid_t root_file_id =
-    conduit::relay::io::hdf5_open_file_for_read_write(file_name);
+    conduit::relay::io::hdf5_open_file_for_read_write(tmp_name);
 
   SLIC_ASSERT(root_file_id >= 0);
 
@@ -1039,8 +1061,14 @@ void IOManager::writeViewToRootFileAtPath(sidre::View* view,
                                           const std::string& group_path)
 {
 #ifdef AXOM_USE_HDF5
+  std::string tmp_name = file_name;
+  if (m_use_scr)
+  {
+    tmp_name = getSCRPath(tmp_name);
+  }
+
   hid_t root_file_id =
-    conduit::relay::io::hdf5_open_file_for_read_write(file_name);
+    conduit::relay::io::hdf5_open_file_for_read_write(tmp_name);
 
   SLIC_ASSERT(root_file_id >= 0);
 
@@ -1078,8 +1106,14 @@ void IOManager::writeBlueprintIndexToRootFile(DataStore* datastore,
                                               const std::string& mesh_path)
 {
 #ifdef AXOM_USE_HDF5
+  std::string tmp_name = file_name;
+  if (m_use_scr)
+  {
+    tmp_name = getSCRPath(tmp_name);
+  }
+
   hid_t root_file_id =
-    conduit::relay::io::hdf5_open_file_for_read_write(file_name);
+    conduit::relay::io::hdf5_open_file_for_read_write(tmp_name);
 
   AXOM_DEBUG_VAR(root_file_id);
   SLIC_ASSERT(root_file_id >= 0);
