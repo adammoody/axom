@@ -189,13 +189,7 @@ void IOManager::write(sidre::Group* datagroup, int num_files,
   if (protocol == "sidre_hdf5")
   {
 #ifdef AXOM_USE_HDF5
-    std::string root_path = root_name;
-    if (m_use_scr && m_my_rank == 0)
-    {
-      root_path = getSCRPath(root_path);
-    }
-
-    std::string file_pattern = getHDF5FilePattern(root_path);
+    std::string file_pattern = getHDF5FilePattern(root_name);
 
     int set_id = m_baton->wait();
 
@@ -206,6 +200,7 @@ void IOManager::write(sidre::Group* datagroup, int num_files,
     {
       hdf5_name = getSCRPath(hdf5_name);
     }
+
     hid_t h5_file_id, h5_group_id;
     if (m_baton->isFirstInGroup())
     {
@@ -314,7 +309,6 @@ void IOManager::read(
     datagroup->load(file_name, protocol, preserve_contents);
 
     (void)m_baton->pass();
-
   }
 }
 
@@ -396,14 +390,8 @@ std::string IOManager::getSCRPath(const std::string & path)
 void IOManager::loadExternalData(sidre::Group* datagroup,
                                  const std::string& root_file)
 {
-  std::string root_path = root_file;
-  if (m_use_scr && m_my_rank == 0)
-  {
-    root_path = getSCRPath(root_path);
-  }
-
-  int num_files = getNumFilesFromRoot(root_path);
-  int num_groups = getNumGroupsFromRoot(root_path);
+  int num_files = getNumFilesFromRoot(root_file);
+  int num_groups = getNumGroupsFromRoot(root_file);
   SLIC_ASSERT(num_files > 0);
   SLIC_ASSERT(num_groups > 0);
 
@@ -422,7 +410,7 @@ void IOManager::loadExternalData(sidre::Group* datagroup,
   }
 
 #ifdef AXOM_USE_HDF5
-  std::string file_pattern = getHDF5FilePattern(root_path);
+  std::string file_pattern = getHDF5FilePattern(root_file);
 
   int set_id = m_baton->wait();
 
@@ -577,7 +565,6 @@ void IOManager::createRootFile(const std::string& file_base,
     }
 
     root_file_name = getSCRPath(root_file_name);
-
   }
 #endif
 
@@ -716,8 +703,14 @@ std::string IOManager::getHDF5FilePattern(
   std::string file_pattern;
   if (m_my_rank == 0)
   {
+    std::string root_path = root_name;
+    if (m_use_scr)
+    {
+      root_path = getSCRPath(root_path);
+    }
+
     conduit::Node n;
-    conduit::relay::io::load(root_name + ":file_pattern", "hdf5", n);
+    conduit::relay::io::load(root_path + ":file_pattern", "hdf5", n);
 
     file_pattern = n.as_string();
   }
@@ -737,14 +730,8 @@ void IOManager::readSidreHDF5(sidre::Group* datagroup,
                               const std::string& root_file,
                               bool preserve_contents)
 {
-  std::string root_path = root_file;
-  if (m_use_scr && m_my_rank == 0)
-  {
-    root_path = getSCRPath(root_path);
-  }
-
-  int num_files = getNumFilesFromRoot(root_path);
-  int num_groups = getNumGroupsFromRoot(root_path);
+  int num_files = getNumFilesFromRoot(root_file);
+  int num_groups = getNumGroupsFromRoot(root_file);
   SLIC_ASSERT(num_files > 0);
   SLIC_ERROR_IF(num_groups > m_comm_size && num_groups != num_files,
                 "IOManager attempted to read using a smaller number of processors "
@@ -765,7 +752,7 @@ void IOManager::readSidreHDF5(sidre::Group* datagroup,
     m_baton = new IOBaton(m_mpi_comm, num_files, num_groups);
   }
 
-  std::string file_pattern = getHDF5FilePattern(root_path);
+  std::string file_pattern = getHDF5FilePattern(root_file);
 
   int set_id = m_baton->wait();
   if (num_groups <= m_comm_size)
@@ -888,8 +875,14 @@ int IOManager::getNumFilesFromRoot(const std::string& root_file)
   int read_num_files = 0;
   if (m_my_rank == 0)
   {
+    std::string root_path = root_file;
+    if (m_use_scr)
+    {
+      root_path = getSCRPath(root_path);
+    }
+
     conduit::Node n;
-    conduit::relay::io::load(root_file + ":number_of_files","hdf5",n);
+    conduit::relay::io::load(root_path + ":number_of_files","hdf5",n);
     read_num_files = n.to_int();
     SLIC_ASSERT(read_num_files > 0);
   }
@@ -912,8 +905,14 @@ int IOManager::getNumGroupsFromRoot(const std::string& root_file)
   int read_num_trees = 0;
   if (m_my_rank == 0)
   {
+    std::string root_path = root_file;
+    if (m_use_scr)
+    {
+      root_path = getSCRPath(root_path);
+    }
+
     conduit::Node n;
-    conduit::relay::io::load(root_file + ":number_of_trees","hdf5",n);
+    conduit::relay::io::load(root_path + ":number_of_trees","hdf5",n);
     read_num_trees = n.to_int();
     SLIC_ASSERT(read_num_trees > 0);
   }
